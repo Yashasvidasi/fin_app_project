@@ -7,6 +7,9 @@ let buttons = [];
 let matches = [];
 let scr = 0;
 const score = document.getElementById("score");
+const timer = document.getElementById("timer");
+const div = document.getElementById("startMain");
+let restart = 0;
 
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -18,9 +21,20 @@ function shuffle(array) {
 
 
 function startgame(){
+if(restart == 1){
+return;
+}
+score.innerText = "SCORE: 0";
+restart = 1;
+
+	cards = [];
+	shuffledcards = [];
+	buttons = [];
+	matches = [];
+	scr = 0;
     text = ``;
-    for(let i=0;i<8;i++){
-        for(let j=0;j<8;j++){
+    for(let i=0;i<4;i++){
+        for(let j=0;j<4;j++){
             obj={button:`${i}b${j}`,color:colors[(i+j)%4],click:0};
             cards.push(obj);
         }   
@@ -29,7 +43,10 @@ function startgame(){
     shuffledcards = shuffle(cards);
     
     buildeck();
+
     initcards();
+start_timer();
+	
     
 }
 
@@ -38,10 +55,6 @@ function sleep(ms) {
 }
 
 
-function check(){
-    
-}
-
 function donthn(){
     console.log("ok");
 }
@@ -49,21 +62,21 @@ function donthn(){
 
 
 function initcards(){
-    for(let i = 0; i<64; i++){
+    for(let i = 0; i<16; i++){
         let b = document.getElementById(shuffledcards[i].button);
         b.onclick = async function(){
             
-            for(let j = 0; j<64; j++){
+            for(let j = 0; j<16; j++){
                 if (b.id == shuffledcards[j].button){
                     if(shuffledcards[j].click == 0){
                         b.innerText = shuffledcards[j].color;
-                        b.setAttribute("style",`color:${shuffledcards[j].color};margin-right: 20px; margin-bottom: 20px;`);
+                        b.setAttribute("style",`background-color:${shuffledcards[j].color};margin-right: 20px; margin-bottom: 20px; height:60px; width:60px;`);
                         shuffledcards[j].click = 1;
                         matches.push(shuffledcards[i]);
                     }
                     else{
                         b.innerText = "\\";
-                        b.style.removeProperty("color");
+                        b.style.removeProperty("background-color");
                         shuffledcards[j].click = 0;
                         matches.shift();
                     }
@@ -79,7 +92,7 @@ function initcards(){
                     b1 = document.getElementById(matches[0].button);
                     b2 = document.getElementById(matches[1].button);
                     scr = scr+1;
-                    score.innerText = scr;
+                    score.innerText = `SCORE: ${scr}`;
                     b1.onclick = donthn;
                     b2.onclick = donthn;
                     matches.shift();
@@ -99,24 +112,37 @@ function initcards(){
     }
     
 }
+async function start_timer(){
+	let n = 30;
+	while (n>-1){
+		timer.innerText = `Time Left: ${n}`;
+		await sleep(1000);
+		n= n-1;
+	}
+	timer.innerText = "TIME UP";
+	alert("time ended");
+
+	mainarea.innerHTML = `<h2> YOUR SCORE : ${scr} </h2>`;
+	score.innerText = ``;
+	restart = 0;
+}
 
 
 function buildeck(){
     mainarea.innerHTML = ``;
-    for(let i = 0; i<64; i++){
-        if(i%8 == 0){
+    for(let i = 0; i<16; i++){
+        if(i%4 == 0){
             let t = mainarea.innerHTML;
             t=t+`<br>`;
             mainarea.innerHTML = t;
         }
         let t = mainarea.innerHTML;
-        t=t+`<button style="margin-right: 20px; margin-bottom: 20px;" id = ${shuffledcards[i].button}>\\</button>`;
+        t=t+`<button style="margin-right: 20px; margin-bottom: 20px; height:60px; width:60px;" id = ${shuffledcards[i].button}>\\</button>`;
         mainarea.innerHTML = t;
         buttons.push(mainarea.lastChild);
         
     }
         
 }
-
 
 sbutton.onclick = startgame;
